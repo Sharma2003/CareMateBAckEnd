@@ -10,8 +10,8 @@ class UserResponse(BaseModel):
     role : str
     password_hash : str
     
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
 
 
 class PasswordChange(BaseModel):

@@ -23,6 +23,6 @@ class PatientProfileResponse(PatientDetails):
     userid : str
     profile_compeleted : bool
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
 

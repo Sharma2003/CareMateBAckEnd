@@ -19,6 +19,6 @@ class DoctorProfileResponse(DoctorDetails):
     userid : str
     profile_completed : bool
 
-    class Config:
-        orm_mode = True
+    # class Config:
+    #     orm_mode = True
 
