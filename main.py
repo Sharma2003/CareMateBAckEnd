@@ -6,6 +6,7 @@ from patients.controller import router as patient_router
 from doctors.controller import router as doctor_router
 from database.core import Base, engine
 from facilites.controller import router as facilites_router 
+from scheduling.controller import router as scheduling_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +17,7 @@ app.include_router(user_router)
 app.include_router(patient_router)
 app.include_router(doctor_router)
 app.include_router(facilites_router)
+app.include_router(scheduling_router)
 
 @app.on_event("startup")
 def startup():
