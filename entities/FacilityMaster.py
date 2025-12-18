@@ -15,6 +15,7 @@ class Facility(Base):
     __tablename__ = "facility"
 
     id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    doctor_id = Column(UUID(as_uuid=True),ForeignKey(Doctor.id))
     facilityName = Column(String,  nullable=False)
     facilityType = Column(String, nullable=False)
     facilityAddress = Column(String, nullable=False)

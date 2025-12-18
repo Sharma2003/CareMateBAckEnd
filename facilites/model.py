@@ -11,7 +11,8 @@ class FacilitiesDetails(BaseModel):
 
 class FacilityResponse(FacilitiesDetails):
     id: UUID
+    doctor_id : UUID
     
     class Config:
-        orm_mode = True
+        from_attributes = True
 

@@ -9,8 +9,9 @@ from fastapi import HTTPException
 from entities.FacilityMaster import Facility
 from facilites.model import FacilityResponse, FacilitiesDetails
 
-def create_doctor_facility(db : Session, payload : FacilitiesDetails) -> Facility:
+def create_doctor_facility(db : Session, payload : FacilitiesDetails, doctor_id:UUID) -> FacilityResponse:
     facility = Facility(
+        doctor_id = doctor_id,
         facilityName = payload.facilityName,
         facilityType = payload.facilityType,
         facilityAddress = payload.facilityAddress,
@@ -22,16 +23,25 @@ def create_doctor_facility(db : Session, payload : FacilitiesDetails) -> Facilit
     db.commit()
     db.refresh(facility)
 
-    return facility
+    return Facility(
+        id = facility.id,
+        doctor_id = facility.doctor_id,
+        facilityName = facility.facilityName,
+        facilityType = facility.facilityType,
+        facilityAddress = facility.facilityAddress,
+        city = facility.city,
+        state = facility.state,
+        postalCode = facility.postalCode
+    )
 
-def get_facility(db :Session, facility_id : UUID) -> Facility:
-    facility = db.query(Facility).filter(Facility.id == facility_id).first()
+def get_facility(db :Session, current_user : UUID):
+    facility = db.query(Facility).filter(Facility.doctor_id == current_user).all()
     if not facility:
         raise HTTPException(status_code=404, detail="Facility not found")
     return facility
 
 
-def update_facility(db: Session, facility_id : UUID, payload : FacilitiesDetails) -> Facility:
+def update_facility(db: Session, facility_id : UUID, payload : FacilitiesDetails) -> FacilityResponse:
     facility = db.query(Facility).filter(Facility.id == facility_id).first()
     if not facility:
         raise HTTPException(status_code=404, detail="For updating the data you need to first create one")
@@ -44,7 +54,7 @@ def update_facility(db: Session, facility_id : UUID, payload : FacilitiesDetails
     db.commit()
     return facility
 
-def delete_facility(db : Session , facility_id : UUID) -> Facility:
+def delete_facility(db : Session , facility_id : UUID) -> FacilityResponse:
     facility = db.query(Facility).filter(Facility.id == facility_id).delete()
     if not facility:
         raise HTTPException(status_code=404, detail="Facility Not Found") 

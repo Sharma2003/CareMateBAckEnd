@@ -1,14 +1,24 @@
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from uuid import UUID
-from datetime import date, time
+from datetime import time
 
 class doctorAvailability(BaseModel):
-    day_of_week : int
-    start_time : time
-    end_time : time
-    slot_duration_minutes : int
-    is_active : bool
+    day_of_week: int
+    start_time: time
+    end_time: time
+    slot_duration_minutes: int
+    is_active: bool
+
+    @field_validator("start_time", "end_time", mode="before")
+    @classmethod
+    def parse_time(cls, v):
+        if isinstance(v, str):
+            h, m = map(int, v.split(":"))
+            return time(h, m)
+        return v
+
+
 
 
 class doctorAvailabilityResponse(doctorAvailability):
@@ -17,4 +27,4 @@ class doctorAvailabilityResponse(doctorAvailability):
     doctor_id : UUID
 
     class Config:
-        orm_mode = True
+        from_attributes = True

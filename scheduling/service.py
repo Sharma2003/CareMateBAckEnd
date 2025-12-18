@@ -8,6 +8,7 @@ from uuid import UUID
 from entities.DoctorFacility import DoctorAvailability
 from entities.Doctor import Doctor
 from entities.FacilityMaster import Facility
+from helper.ensure import ensure_doctor_role
 from scheduling.model import doctorAvailability, doctorAvailabilityResponse
 
 def create_Doctor_Scheule(db:Session, doctor_id : UUID, facility_id : UUID,payload : doctorAvailability)->doctorAvailabilityResponse:
@@ -60,8 +61,9 @@ def update_Doctor_Availability(db:Session, facility_id : UUID, payload: doctorAv
     db.commit()
     return doctor
 
-def delete_Doctor_Availability(db : Session, Scheduling_id: UUID):
-    id = db.query(DoctorAvailability).filter(DoctorAvailability.id == Scheduling_id).delete()
+def delete_Doctor_Availability(db : Session, current_user: UUID, Scheduling_id: UUID):
+    user = ensure_doctor_role(current_user=current_user, db = db)
+    id = db.query(user).filter(user.id == Scheduling_id).delete()
     if not id:
         raise HTTPException(status_code=404, detail="Scheduling id Not Found") 
     db.commit()
