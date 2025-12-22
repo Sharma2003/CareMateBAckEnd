@@ -1,6 +1,3 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from fastapi import APIRouter, Depends, HTTPException
 from database.core import DbSession, engine, Base
 from auth.service import CurrentUser

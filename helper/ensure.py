@@ -1,6 +1,3 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from uuid import UUID
@@ -22,7 +19,7 @@ def ensure_doctor_role(current_user : UUID, db : Session):
     if not user:
         raise HTTPException(status_code=404, detail="User Not Found")
     if user.role != "doctor".lower():
-        raise HTTPException(status_code=403, detail="Only Patient Can Access This Resources")
+        raise HTTPException(status_code=403, detail="Only Doctor Can Access This Resources")
     
     return user 
 

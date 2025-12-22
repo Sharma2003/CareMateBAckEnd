@@ -1,6 +1,3 @@
-import sys,os 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from uuid import UUID, uuid4
@@ -15,6 +12,7 @@ from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from dotenv import load_dotenv
 from database.core import *
+import logging
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -33,6 +31,7 @@ def get_password_hash(password: str) -> str:
 def authenticate_user(userid: str, password: str, db: Session) -> User| bool:
     user = db.query(User).filter(User.userid == userid).first()
     if not user or not verify_password(password, user.password_hash):
+        logging.warning(f'Failed authentication atempt for username : {userid}')
         return False
     return user
 
@@ -50,7 +49,8 @@ def verify_token(token: str) -> TokenData:
         payload = jwt.decode(token, SECRET_KEY, [ALGORITHM])
         userid : str | None = payload.get('id')
         return TokenData(user_id=userid)
-    except:
+    except PyJWKError as e:
+        logging.warning(f"Token Verification failed: {str(e)}")
         return Exception
     
 def registered_user(db:Session, register_user_request : RegiserUserRequest) -> None:
@@ -66,7 +66,8 @@ def registered_user(db:Session, register_user_request : RegiserUserRequest) -> N
         db.add(create_user_model)
         db.commit()
     except Exception as e:
-        raise e
+        logging.error(f"Failed to register user: {register_user_request.email}. Error: {str(e)}")
+        raise 
     
 def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]) -> TokenData:
     return verify_token(token)

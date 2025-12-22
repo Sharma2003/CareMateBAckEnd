@@ -1,7 +1,4 @@
 # patients/service.py
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
@@ -9,11 +6,12 @@ from fastapi import HTTPException, status
 from entities.Patients import Patient
 from entities.Users import User
 from patients.model import PatientDetails, PatientProfileResponse
-
+import logging
 
 def get_patient_profile(user_id: UUID, db : Session) -> PatientProfileResponse:
     patient = db.query(Patient).filter(Patient.id == user_id).first()
     if not patient:
+        logging.warning(f"patient ID Not found: {user_id}")
         raise HTTPException(status_code=404, detail="Patient Profile Not Found")
 
     user = db.query(User).filter(User.id == user_id).first()
@@ -40,6 +38,7 @@ def get_patient_profile(user_id: UUID, db : Session) -> PatientProfileResponse:
 def upsert_patient_profile(user_id : UUID, data: PatientDetails, db: Session) -> PatientProfileResponse:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
+        logging.warning(f"patient ID Not found: {user_id}")
         raise HTTPException(status_code=404, detail="User Not Found")
 
     patient = db.query(Patient).filter(Patient.id == user_id).first()

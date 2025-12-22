@@ -1,6 +1,3 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from sqlalchemy import Column, String, ForeignKey, Date, Boolean, INTEGER
 from sqlalchemy.dialects.postgresql import UUID
 import uuid

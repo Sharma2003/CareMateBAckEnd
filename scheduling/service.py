@@ -1,6 +1,3 @@
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from uuid import UUID
@@ -46,7 +43,7 @@ def get_Doctor_Availability(db:Session, doctor_id: UUID) -> doctorAvailabilityRe
     doc = db.query(DoctorAvailability).filter(DoctorAvailability.doctor_id == doctor_id).all()
     if not doc:
         raise HTTPException(status_code=404, detail="doctor id not found")
-    return doc
+    return doc[0]
 
 def update_Doctor_Availability(db:Session, facility_id : UUID, payload: doctorAvailability) -> doctorAvailabilityResponse:
     doctor = db.query(DoctorAvailability).filter(DoctorAvailability.facility_id == facility_id).first()
