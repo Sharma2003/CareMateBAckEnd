@@ -6,11 +6,9 @@ class UserResponse(BaseModel):
     userid : str
     email : EmailStr
     role : str
-    password_hash : str
-    
-    # class Config:
-    #     orm_mode = True
 
+class UserPasswordResponse(UserResponse):
+    password_hash : str
 
 class PasswordChange(BaseModel):
     current_password : str

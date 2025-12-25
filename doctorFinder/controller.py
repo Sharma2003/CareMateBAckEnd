@@ -1,8 +1,7 @@
-from doctorFinder.service import get_factility, get_doctor
+from doctorFinder.service import list_facilities, list_doctors_by_facility, list_doctor_slots
 from fastapi import APIRouter
 from database.core import DbSession
 from uuid import UUID
-from helper.slot_generator import slot_generator
 from helper.ensure import ensure_patient_role
 from auth.service import CurrentUser
 
@@ -14,15 +13,15 @@ router = APIRouter(
 @router.get("/facility")
 def facility(db : DbSession, current_user : CurrentUser):
     ensure_patient_role(db=db, current_user=current_user.get_uuid())
-    return get_factility(db=db)
+    return list_facilities(db=db)
 
 @router.get("/doctor")
-def doctor(db: DbSession, facilityname: str, current_user : CurrentUser):
+def get_doctors(db: DbSession, facility_id: UUID, current_user: CurrentUser):
     ensure_patient_role(db=db, current_user=current_user.get_uuid())
-    return get_doctor(db=db, facilityname=facilityname)
+    return list_doctors_by_facility(db=db, facility_id=str(facility_id))
 
 
 @router.get("/doctor-slots")
-def doctor_slots(db:DbSession, current_user : CurrentUser, id : UUID):
+def get_doctor_slots(db: DbSession, doctor_id: UUID, current_user: CurrentUser):
     ensure_patient_role(db=db, current_user=current_user.get_uuid())
-    return slot_generator(db=db, current_user=id)
+    return list_doctor_slots(db=db, doctor_id=str(doctor_id))

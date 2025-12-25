@@ -16,4 +16,4 @@ def get_me(current_user: CurrentUser, db: DbSession):
 
 @router.put("/change-password")
 def change_password(db:DbSession, password_change:PasswordChange, current_user:CurrentUser):
-    changePassword(db=db,password_change=password_change,user_id=current_user.user_id)
+    return changePassword(db=db,password_change=password_change,user_id=current_user.user_id)

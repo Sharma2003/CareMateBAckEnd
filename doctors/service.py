@@ -15,18 +15,13 @@ def get_doctor_profile(user_id : UUID, db: Session) -> DoctorProfileResponse:
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    return DoctorProfileResponse(
-        id = doctor.id,
-        email = user.email,
-        userid = user.userid,
-        profile_completed = True,
-        first_name = doctor.first_name,
-        last_name = doctor.last_name,
-        gender = doctor.gender,
-        DOB = doctor.DOB,
-        phoneNo = doctor.phoneNo,
-        YOE = doctor.YOE
-    )
+    data = {
+    **doctor.__dict__,
+    "email": user.email,
+    "userid": user.userid
+}
+    
+    return DoctorProfileResponse.model_validate(data,from_attributes=True)
 
 
 def upsert_doctor_profile(user_id : UUID, data : DoctorDetails, db : Session) -> DoctorProfileResponse:
@@ -53,18 +48,12 @@ def upsert_doctor_profile(user_id : UUID, data : DoctorDetails, db : Session) ->
     db.commit()
     db.refresh(doctor)
 
-    return DoctorProfileResponse(
-        id = doctor.id,
-        email = user.email,
-        userid = user.userid,
-        profile_completed = True,
-        first_name = doctor.first_name,
-        last_name = doctor.last_name,
-        gender = doctor.gender,
-        DOB = doctor.DOB,
-        phoneNo = doctor.phoneNo,
-        YOE = doctor.YOE
-    )
+    data = {
+        **doctor.__dict__,
+        "email" : user.email,
+        "userid" : user.userid
+    }
+    return DoctorProfileResponse.model_validate(data,from_attributes=True)
 
 
 def update_doctor_profile(user_id : UUID, data : DoctorDetails, db : Session) -> DoctorProfileResponse:
@@ -82,15 +71,4 @@ def update_doctor_profile(user_id : UUID, data : DoctorDetails, db : Session) ->
         doctor.phoneNo = data.phoneNo
         doctor.YOE = data.YOE
     db.commit()
-    return DoctorProfileResponse(
-        id = doctor.id,
-        email = user.email,
-        userid = user.userid,
-        profile_completed = True,
-        first_name = doctor.first_name,
-        last_name = doctor.last_name,
-        gender = doctor.gender,
-        DOB = doctor.DOB,
-        phoneNo = doctor.phoneNo,
-        YOE = doctor.YOE
-    )
+    return DoctorProfileResponse.model_validate(doctor)

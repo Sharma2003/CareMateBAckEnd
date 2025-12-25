@@ -14,25 +14,25 @@ router = APIRouter(
     tags=["schedule"]
 )
 
-@router.post("/create",response_model=doctorAvailabilityResponse)
+@router.post("/",response_model=doctorAvailabilityResponse)
 def create(payload:doctorAvailability, db : DbSession, facility_id : UUID, current_user : CurrentUser):
     ensure_doctor_role(current_user=current_user.get_uuid(), db = db)
     # ensure_doctor_username(db=db , username=current_user.user_id)
     return create_Doctor_Scheule(db=db,doctor_id=current_user.get_uuid(),facility_id=facility_id,payload=payload)
  
-@router.get("/get_Doctor_Availability")
+@router.get("/")
 def get_Availability(db:DbSession, current_user:CurrentUser):
     ensure_doctor_role(current_user=current_user.get_uuid(), db = db)
     # ensure_doctor_username(db=db , username=current_user.user_id)
     return get_Doctor_Availability(db=db,doctor_id=current_user.get_uuid())
 
-@router.put("/update_Doctor_Availability",response_model=doctorAvailabilityResponse)
+@router.put("/{facility_id}",response_model=doctorAvailabilityResponse)
 def update_Availability(db:DbSession,facility_id : UUID,current_user : CurrentUser ,payload: doctorAvailability):
     ensure_doctor_role(current_user=current_user.get_uuid(), db = db)
     ensure_doctor_facility(db=db, facility_id=facility_id)
     return update_Doctor_Availability(db=db, facility_id=facility_id, payload=payload)
 
-@router.delete("/delete_Doctor_Availability",response_model=doctorAvailabilityResponse)
+@router.delete("/delete_Doctor_Availability")
 def delete_Availability(db:DbSession,Scheduling_id : UUID, current_user : CurrentUser, facility_id : UUID):
     ensure_doctor_role(db=db, current_user=current_user.get_uuid())
     ensure_doctor_facility(db=db, facility_id=facility_id)

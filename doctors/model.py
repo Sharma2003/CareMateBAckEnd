@@ -14,8 +14,4 @@ class DoctorProfileResponse(DoctorDetails):
     id : UUID
     email : EmailStr
     userid : str
-    profile_completed : bool
-
-    # class Config:
-    #     orm_mode = True
 

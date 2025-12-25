@@ -19,6 +19,3 @@ class Patient(Base):
     emergencyContactName = Column(String)
     emergencyContactPhone = Column(String)
     user = relationship("User",backref="patientProfile")
-
-    def __repr__(self):
-        return f"<User(profileCompleted='{self.profileCompleted}', first_name = '{self.first_name}', last_name = '{self.last_name}')>"

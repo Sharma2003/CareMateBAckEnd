@@ -1,9 +1,8 @@
-from sqlalchemy import Column, ForeignKey, String, DATE, Time, Integer, SmallInteger, Boolean
+from sqlalchemy import Column, ForeignKey, String, DATE, Time, Integer, SmallInteger, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
-from entities.Users import User
 from entities.Doctor import Doctor
 from database.core import Base
 
@@ -21,3 +20,8 @@ class DoctorAvailability(Base):
     end_time = Column(Time,nullable=False)
     slot_duration_minutes = Column(Integer, default=5)
     is_active = Column(Boolean)
+
+    
+__table_args__ = (
+    UniqueConstraint("doctor_id", "facility_id", "day_of_week", "start_time", "end_time"),
+)

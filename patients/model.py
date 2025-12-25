@@ -19,7 +19,6 @@ class PatientProfileResponse(PatientDetails):
     id : UUID
     email : EmailStr
     userid : str
-    profile_compeleted : bool
 
     # class Config:
     #     orm_mode = True
