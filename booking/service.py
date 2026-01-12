@@ -28,3 +28,12 @@ def bookAppointment(db : Session, currentUser : UUID, doctor_id : UUID, facility
     db.commit()
     db.refresh(booking_appointment) 
     return bookingSlotsResponse.model_validate(booking_appointment,from_attributes=True)
+
+
+def get_patient_appointments(db:Session, patient_id : UUID):
+    patient = db.query(Booking).filter(Booking.patient_id == patient_id).order_by(Booking.start_ts).all()
+    return patient
+
+def get_doctor_appointments(db:Session, doctor_id : UUID):
+    doctor = db.query(Booking).filter(Booking.doctor_id == doctor_id).order_by(Booking.start_ts).all()
+    return doctor

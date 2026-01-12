@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from chat.src.utils.runtime import init_graph
+
 from auth.controller import router as auth_router
 from users.controller import router as user_router
 from patients.controller import router as patient_router
@@ -8,6 +10,7 @@ from facilites.controller import router as facilites_router
 from scheduling.controller import router as scheduling_router
 from doctorFinder.controller import router as doctorFinder_router
 from booking.controller import router as booking_router
+from chat.controller import router as chat_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -20,10 +23,12 @@ app.include_router(facilites_router)
 app.include_router(scheduling_router)
 app.include_router(doctorFinder_router)
 app.include_router(booking_router)
+app.include_router(chat_router)
 
-@app.on_event("startup")
-def startup():
-    Base.metadata.create_all(bind=engine)
+# @app.on_event("startup")    
+# async def startup():
+#     await init_graph()
+#     # Base.metadata.create_all(bind=engine)
 @app.get("/")
 def hello():
     return {"Hello": "World"}

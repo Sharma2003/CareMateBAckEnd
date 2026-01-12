@@ -5,7 +5,7 @@ from uuid import UUID
 from entities.Users import User
 from entities.FacilityMaster import Facility
 
-def ensure_patient_role(current_user : UUID, db : Session):
+def ensure_patient_role(db : Session, current_user : UUID):
     user = db.query(User).filter(User.id == current_user).first()
     if not user:
         raise HTTPException(status_code=404, detail="User Not Found")
@@ -14,7 +14,7 @@ def ensure_patient_role(current_user : UUID, db : Session):
     
     return user 
 
-def ensure_doctor_role(current_user : UUID, db : Session):
+def ensure_doctor_role(db : Session, current_user : UUID):
     user = db.query(User).filter(User.id == current_user).first()
     if not user:
         raise HTTPException(status_code=404, detail="User Not Found")
