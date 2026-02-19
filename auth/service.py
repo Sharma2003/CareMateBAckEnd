@@ -8,9 +8,11 @@ from jwt import PyJWKError
 from sqlalchemy.orm import Session
 from entities.Users import User
 from auth.model import RegiserUserRequest, Token, TokenData
+
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from dotenv import load_dotenv
+from pydantic import ValidationError
 from database.core import *
 import logging
 load_dotenv()
@@ -28,7 +30,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     return bcrypt_context.hash(password)
 
-def authenticate_user(userid: str, password: str, db: Session) -> User| bool:
+def authenticate_user(userid: str, password: str, db: Session) -> User | bool:
     user = db.query(User).filter(User.userid == userid).first()
     if not user or not verify_password(password, user.password_hash):
         logging.warning(f'Failed authentication atempt for username : {userid}')
@@ -47,11 +49,15 @@ def create_access_token(userid : str, id:UUID, expires_delta:timedelta) -> str:
 def verify_token(token: str) -> TokenData:
     try:
         payload = jwt.decode(token, SECRET_KEY, [ALGORITHM])
-        userid : str | None = payload.get('id')
-        return TokenData(user_id=userid)
-    except PyJWKError as e:
-        logging.warning(f"Token Verification failed: {str(e)}")
-        return Exception
+        id : str | None = payload.get('id')
+        username : str | None = payload.get('sub')
+        return TokenData(user_id=id,user_name=username)
+    except Exception:
+        raise HTTPException(
+        status_code=401,
+        detail="Invalid or expired token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     
 def registered_user(db:Session, register_user_request : RegiserUserRequest) -> None:
     try:
@@ -59,12 +65,14 @@ def registered_user(db:Session, register_user_request : RegiserUserRequest) -> N
             id = uuid4(),
             userid = register_user_request.userid,
             email = register_user_request.email,
-            role = register_user_request.role.lower(),
-            password_hash = get_password_hash(register_user_request.password)
+            role = register_user_request.role,
+            password_hash = get_password_hash(register_user_request.password.get_secret_value())
         )
 
         db.add(create_user_model)
         db.commit()
+    except ValidationError as e:
+        logging.error(f"Error: {e}")
     except Exception as e:
         logging.error(f"Failed to register user: {register_user_request.email}. Error: {str(e)}")
         raise 

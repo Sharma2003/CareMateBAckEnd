@@ -3,14 +3,17 @@ from users.model import *
 from auth.service import *
 from users.service import *
 from database.core import DbSession
+from helper.authenicate import authorize_user_access
  
 router = APIRouter(
     prefix='/users',
     tags=['users']
 )
 
-@router.get("/me",response_model=UserResponse)
-def get_me(current_user: CurrentUser, db: DbSession):
+@router.get("/{user_name}")
+def get_me(user_name:str,current_user: CurrentUser, db: DbSession):
+    authorize_user_access(current_user.user_name,user_name)
+    print(current_user.user_name)
     return get_user_by_id(current_user.get_uuid(),db)
 
 

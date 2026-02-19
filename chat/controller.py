@@ -4,14 +4,18 @@ from langgraph.checkpoint.redis.aio import AsyncRedisSaver
 from langchain_core.messages import HumanMessage
 from dotenv import load_dotenv
 import os
+from langchain_core.messages import AIMessage, HumanMessage
 
-from helper.ensure import ensure_patient_role
+
+from helper.chatStore import strcuting_chat
 from chat.src.utils.runtime import graph_app
-from chat.src.graph.state import InterviewState, PatientChatRequest
+from chat.src.graph.state import PatientChatRequest
 from chat.src.graph.graph_redis import build_app
 from auth.service import CurrentUser
-# from database.core import DbSession
-from sqlalchemy.orm import Session
+from rq_worker.generate_report import generate_reports_job
+from rq_worker.queues import report_queue
+# from rq_worker.worker import run_async
+
 
 load_dotenv()
 db_uri = os.getenv("REDIS_URL")
@@ -34,7 +38,6 @@ async def start_interview(current_user: CurrentUser):
 
         graph_app = build_app(checkpointer=saver)
 
-    print(graph_app)
     result = await graph_app.ainvoke(
         {"messages": [HumanMessage(content="(start)")]},
         config=config
@@ -46,13 +49,33 @@ async def start_interview(current_user: CurrentUser):
     }
 
 @router.post("/next_message")
-async def next_message(req: PatientChatRequest):
+async def next_message(req: PatientChatRequest,current_user:CurrentUser):
     result = await graph_app.ainvoke(
         {"messages": [req.messages]},
         config={"configurable": {"thread_id": req.thread_id}}
     )
+    doctor_id = req.doctor_id
+
+    if result['done']:
+        chat = strcuting_chat(result['messages'])
+        state = {
+            "chat":chat,
+            "doctor_report_md":None,
+            "patient_report_md":None
+        }
+
+        report_queue.enqueue(
+            generate_reports_job,
+            str(current_user.get_uuid()),
+            str(doctor_id),
+            state,
+        )
+        
+
 
     return {
         "assistant_reply": result["messages"][-1].content,
-        "thread_id": req.thread_id
+        "thread_id": req.thread_id,
+        "status" : req.status
     }
+

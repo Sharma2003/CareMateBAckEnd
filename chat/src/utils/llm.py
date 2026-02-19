@@ -16,7 +16,7 @@ def medgemma_get_text_response(messages, max_new_tokens=180):
         ollama_msgs.append({"role": role, "content": m.content})
 
     response = ollama.chat(
-        model="alibayram/medgemma:27b",
+        model="MedAIBase/MedGemma1.5:4b",
         messages=ollama_msgs,
         options={"num_predict": max_new_tokens}
     )

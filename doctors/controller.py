@@ -4,7 +4,7 @@ from auth.service import CurrentUser
 from entities.Users import User
 from entities.Doctor import Doctor
 from doctors.model import DoctorDetails, DoctorProfileResponse
-from doctors.service import get_doctor_profile, upsert_doctor_profile, update_doctor_profile
+from doctors.service import get_doctor_profile, upsert_doctor_profile
 from sqlalchemy.orm import Session
 
 
@@ -31,7 +31,7 @@ def create_profie(current_user : CurrentUser, payload:DoctorDetails, db:DbSessio
     ensure_doctor_role(current_user=current_user,db=db)
     return upsert_doctor_profile(current_user.get_uuid(),db=db,data=payload)
 
-@router.put("/profile",response_model=DoctorProfileResponse)
-def update_profile(current_user : CurrentUser, db : DbSession, payload : DoctorDetails):
-    ensure_doctor_role(current_user=current_user.get_uuid(),db=db)
-    return update_doctor_profile(current_user=current_user.get_uuid(),db=db,data=payload)
+# @router.put("/profile",response_model=DoctorProfileResponse)
+# def update_profile(current_user : CurrentUser, db : DbSession, payload : DoctorDetails):
+#     ensure_doctor_role(current_user=current_user.get_uuid(),db=db)
+#     return update_doctor_profile(current_user=current_user.get_uuid(),db=db,data=payload)

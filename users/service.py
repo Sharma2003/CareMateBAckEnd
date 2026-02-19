@@ -6,9 +6,9 @@ from entities.Users import User
 from auth.service import verify_password, get_password_hash
 from database.core import *
 import logging 
-from users.model import UserResponse, UserPasswordResponse
+from users.model import UserResponse
 
-def get_user_by_id(user_id : UUID, db : Session) -> UserPasswordResponse:
+def get_user_by_id(user_id : UUID, db : Session):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         logging.warning(f"User ID Not found: {user_id}")

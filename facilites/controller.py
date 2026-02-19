@@ -14,8 +14,8 @@ from helper.ensure import ensure_doctor_role
 
 
 router = APIRouter(
-    prefix="/facilities",
-    tags=["facilities"]
+    prefix="/providers",
+    tags=["provider"]
 )
 
 

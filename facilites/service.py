@@ -7,9 +7,7 @@ from entities.FacilityMaster import Facility
 from facilites.model import FacilityResponse, FacilitiesDetails
 
 
-def create_doctor_facility(
-    db: Session, payload: FacilitiesDetails, doctor_id: UUID
-) -> FacilityResponse:
+def create_doctor_facility(db: Session, payload: FacilitiesDetails, doctor_id: UUID):
 
     facility = Facility(
         doctor_id=doctor_id,
@@ -38,9 +36,7 @@ def get_facilities_for_doctor(db: Session, doctor_id: UUID) -> FacilityResponse:
     return [FacilityResponse.model_validate(f) for f in facilities]
 
 
-def update_facility(
-    db: Session, facility_id: UUID, payload: FacilitiesDetails
-) -> FacilityResponse:
+def update_facility(db: Session, facility_id: UUID, payload: FacilitiesDetails):
 
     facility = db.query(Facility).filter(Facility.id == facility_id).first()
 

@@ -7,7 +7,7 @@ You need to summerize the conversation in 4-5 sentences only
 CLOSING_LINE = """
 Thank you for answering my questions. I have everything needed to prepare a report for your visit. End interview.
 """
-MAX_QUESTIONS = 6
+MAX_QUESTIONS = 10
 
 INTERVIEW_PROMPT = """
 

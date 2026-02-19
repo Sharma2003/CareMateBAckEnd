@@ -6,14 +6,11 @@ from langchain_core.messages import BaseMessage
 from chat.src.graph.state import InterviewState, add_messages
 from chat.src.graph.nodes import ask_question, update_report, summarize_chat
 from chat.src.graph.edges import finalize_node, should_continue 
-
-class BaseChatState(TypedDict):
-    messages : Annotated[list[BaseMessage],add_messages]
-    question_count : int
+from chat.src.graph.state import InterviewState
 
 
 def build_app(checkpointer):
-    g = StateGraph(BaseChatState)
+    g = StateGraph(InterviewState)
 
     g.add_node("ask_question", ask_question)
     g.add_node("update_report", update_report)
@@ -27,7 +24,7 @@ def build_app(checkpointer):
         should_continue,
         {"wait_for_user": END, "finalize": "finalize"}
     )
-    g.add_edge("finalize", "update_report")
-    g.add_edge("ask_question", END)
+    g.add_edge("finalize", END)
+    # g.add_edge("ask_question", END)
     return g.compile(checkpointer=checkpointer)
 

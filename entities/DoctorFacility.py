@@ -12,7 +12,7 @@ from entities.FacilityMaster import Facility
 class DoctorAvailability(Base):
     __tablename__ = "doctor_availability"
     
-    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4) ## Remove this 
     facility_id = Column(UUID(as_uuid=True), ForeignKey(Facility.id))
     doctor_id = Column(UUID(as_uuid=True), ForeignKey(Doctor.id))
     day_of_week  = Column(SmallInteger,nullable=False)
